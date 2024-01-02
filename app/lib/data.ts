@@ -9,12 +9,14 @@ import {
   Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
+import { unstable_noStore as noStore } from 'next/cache';
 
 const pool = new Pool();
 
 export async function fetchRevenue(): Promise<Revenue[]> {
   // Add noStore() here prevent the response from being cached.
   // This is equivalent to in fetch(..., {cache: 'no-store'}).
+  noStore();
 
   try {
     // Artificially delay a response for demo purposes.
@@ -35,6 +37,8 @@ export async function fetchRevenue(): Promise<Revenue[]> {
 }
 
 export async function fetchLatestInvoices(): Promise<LatestInvoiceRaw[]> {
+  noStore();
+
   try {
     const data = await pool.query(`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
@@ -56,6 +60,8 @@ export async function fetchLatestInvoices(): Promise<LatestInvoiceRaw[]> {
 }
 
 export async function fetchCardData() {
+  noStore();
+
   try {
     const [invoiceCount, customerCount, invoiceStatus] = await Promise.all([
       pool.query('SELECT COUNT(*) FROM invoices'),
@@ -90,6 +96,8 @@ export async function fetchFilteredInvoices(
   query: string,
   currentPage: number,
 ): Promise<InvoicesTable[]> {
+  noStore();
+
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
@@ -122,6 +130,8 @@ export async function fetchFilteredInvoices(
 }
 
 export async function fetchInvoicesPages(query: string) {
+  noStore();
+
   try {
     const count = await pool.query(`
       SELECT COUNT(*)
@@ -144,6 +154,8 @@ export async function fetchInvoicesPages(query: string) {
 }
 
 export async function fetchInvoiceById(id: string): Promise<InvoiceForm> {
+  noStore();
+
   try {
     const data = await pool.query(`
       SELECT
@@ -169,6 +181,8 @@ export async function fetchInvoiceById(id: string): Promise<InvoiceForm> {
 }
 
 export async function fetchCustomers(): Promise<CustomerField[]> {
+  noStore();
+
   try {
     const data = await pool.query(`
       SELECT
@@ -187,6 +201,8 @@ export async function fetchCustomers(): Promise<CustomerField[]> {
 }
 
 export async function fetchFilteredCustomers(query: string): Promise<CustomersTableType[]> {
+  noStore();
+
   try {
     const data = await pool.query(`
       SELECT
@@ -220,6 +236,8 @@ export async function fetchFilteredCustomers(query: string): Promise<CustomersTa
 }
 
 export async function getUser(email: string) {
+  noStore();
+
   try {
     const user = await pool.query('SELECT * FROM users WHERE email=$1', [email]);
     return user.rows[0] as User;
