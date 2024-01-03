@@ -57,3 +57,13 @@ export async function updateInvoice(id: string, formData: FormData) {
 
   redirect('/dashboard/invoices');
 }
+
+export async function deleteInvoice(id: string) {
+  const pool = new Pool();
+  await pool.query(`
+    DELETE FROM invoices
+    WHERE id = $1;
+  `, [id]);
+
+  revalidatePath('/dashboard/invoices');
+}
